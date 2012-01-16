@@ -336,3 +336,7 @@ border-radius: 7px 7px 7px 7px;
        -o-transition-property:         top, left, opacity;
           transition-property:         transform, opacity;
 }
+
+.item img{
+  padding-left: 5px;
+}

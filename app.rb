@@ -1,3 +1,4 @@
+require "digest"
 enable :sessions
 set :public_folder, File.join(File.dirname(__FILE__), 'public')
 
@@ -39,6 +40,13 @@ get "/feed" do
 end
 
 get "/moar" do
-   @images = Instagram.media_popular.collect { |i| i.images.thumbnail.url }.to_json
+   @images = Instagram.media_popular.collect do |i| 
+     url = i.images.thumbnail.url
+     [url, hsh(url) ]
+   end.to_json
    #erb :images, :layout => false
+end
+
+def hsh(str)
+  Digest::MD5.hexdigest(str)
 end

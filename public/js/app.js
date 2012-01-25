@@ -1,31 +1,54 @@
 $images = [];
+$loaded_img = []
 $container = $('#pics');
-$pause = false;
+
+$PAUSED = false;
+
+$WIDTH = 8;
+$MAX_SIZE = 16;
+$BUFFER = 24;
+
+$counter = 0;
+
+$(function() {
+    $('#jmpress').jmpress();
+});
 
 function draw(callback){
 
-  if ($pause)
+  if ($PAUSED)
   {
+    setTimeout("draw()", 1000);
     return;
+
   }
   var html = ""
 
 
-  if($images.length < 24)
+  if($images.length < $BUFFER)
   {
     load_items();
   }
 
-  len = ($images.length < 8 ? $images.length : 8)
+  len = ($images.length < $WIDTH ? $images.length : $WIDTH)
   for(var i = 0; i < len; i++) {
-    html = html + "<div class='item'><img src='" + $images.shift() + "' /></div>";
+    img = $images.shift();
+    html = html + "<div class='item' id='" + img[1] +"'><img src='" + img[0] + "' /></div>";
   }
 
-  var new_items = $(html);
+  var new_items = $("<span id='container" + $counter + "'>" + html + "</span");
+
+  $loaded_img = $loaded_img.concat($counter)
+  $counter++;
   new_items.imagesLoaded(function() {
 
       $container.prepend(new_items).isotope( 'reloadItems').isotope({ sortBy: 'original-order', gutterWidth: 10 });
-      setTimeout("draw()", 500);
+      if ($loaded_img.length > $MAX_SIZE)
+      {
+	  $("#container" + $loaded_img.shift()).remove();
+      }
+
+      setTimeout("draw()", 1000);
 
     });
 
@@ -56,7 +79,8 @@ $(window).load(function(){
     $container.isotope(
       {
 	itemSelector: '.item',
-	gutterWidth: 10
+	gutterWidth: 10,
+	animationEngine: 'css'
       }
     );
 

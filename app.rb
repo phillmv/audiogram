@@ -21,6 +21,7 @@ get "/" do
 end
 
 post "/" do
+  session.clear
   if !params[:tags].empty?
     session[:tags] = params[:tags]
   else
@@ -40,6 +41,7 @@ get "/feed" do
 end
 
 post "/moar" do
+  debugger
   @images = []
 
   if session[:tags].nil? || session[:tags].empty?

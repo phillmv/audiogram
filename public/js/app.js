@@ -1,3 +1,10 @@
+// Note for anyone reading this IN THE FUTURE
+// I clearly don't know how to write idiomatic js.
+// I am moderately ashamed about this, don't worry.
+
+// I CAN TELL this is lame code, but I didn't have time
+// to finish reading 'The Good Parts' before the party date.
+
 $images = [];
 $loaded_img = []
 $container = $('#pics');
@@ -5,14 +12,10 @@ $container = $('#pics');
 $PAUSED = false;
 
 $WIDTH = 8;
-$MAX_SIZE = 16;
+$MAX_SIZE = 12;
 $BUFFER = 24;
 
 $counter = 0;
-
-$(function() {
-    $('#jmpress').jmpress();
-});
 
 function draw(callback){
 
@@ -54,11 +57,6 @@ function draw(callback){
 
 }
 
-function foo()
-{
-  alert('feh');
-}
-
 function load_items(callback)
 {
   $.getJSON("/moar", function(data) {
@@ -72,6 +70,11 @@ function load_items(callback)
 
 }
 
+$(function() {
+    $('#jmpress').jmpress();
+});
+
+
 $(window).load(function(){
 
     load_items(draw);
@@ -83,6 +86,7 @@ $(window).load(function(){
 	animationEngine: 'css'
       }
     );
+
 
 
     $("#moar").click(function(event) {	

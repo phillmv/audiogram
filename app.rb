@@ -5,6 +5,7 @@ enable :sessions
 set :public_folder, File.join(File.dirname(__FILE__), 'public')
 
 IMG_COUNT = 40
+DEFAULT_TAGS = ["paris", "edbanger", "justice", "daftpunk", "uffie", "gainsbourg", "air", "m83", "kavinsky", "yelle", "cassius", "sebastiAn", "busyp", "oizo"]
 
 CALLBACK_URL = "http://localhost:4567/oauth/callback"
 
@@ -41,48 +42,56 @@ get "/feed" do
 end
 
 post "/moar" do
-  debugger
   @images = []
 
-  if session[:tags].nil? || session[:tags].empty?
-    @images = Instagram.media_popular.collect do |i| 
-      i.images.thumbnail.url
+  tags = params[:tags]
+
+  if !tags.nil? && tags.first.empty?
+    tags = DEFAULT_TAGS
+  end
+
+  #  if tags.nil? || tags.empty?
+  #    @images = Instagram.media_popular.collect do |i| 
+  #      i.images.thumbnail.url
+  #    end
+  #  else
+  content = []
+
+  pagination = params[:next_id]
+  next_max_id = {}
+
+  tags.each do |tag|
+
+    if pagination.nil? || pagination[tag].nil? || pagination[tag].empty?
+      tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT)
+    else
+      tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT, :max_id => pagination[tag])
+      puts "#{tag} -- #{pagination[tag]}"
     end
-  else
-    content = []
+    content << tag_media
+    next_max_id[tag] = tag_media.pagination.next_max_id
+  end
 
-    pagination = params[:next_id]
-    next_max_id = {}
-
-    session[:tags].each do |tag|
-
-      if pagination.nil? || pagination[tag].nil? || pagination[tag].empty?
-	tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT)
-      else
-	tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT, :max_id => pagination[tag])
-	puts "#{tag} -- #{pagination[tag]}"
-      end
-      content << tag_media
-      next_max_id[tag] = tag_media.pagination.next_max_id
-    end
-
-    IMG_COUNT.times do |i|
-      content.each do |insta|
-	if !insta.data[i].nil?
-	  @images << insta.data[i].images.thumbnail.url
-	end
+  IMG_COUNT.times do |i|
+    content.each do |insta|
+      if !insta.data[i].nil?
+	@images << insta.data[i].images.thumbnail.url
       end
     end
   end
+  #  end
   [next_max_id, @images].to_json
 end
 
-post '/tagged' do
-  content = Instagram.tag_recent_media("edbanger")
-  max_id = content.pagination.next_max_id
+get "/tagged" do
 
-  content = Instagram.tag_recent_media("edbanger", :max_id => max_id)
-  max_id = content.pagination.next_max_id
+  content = Instagram.tag_recent_media("somekindatest")
+  
+  if !content.data.empty?
+    content.data[0].images.standard_resolution.url.to_json
+  else
+    ""
+  end
 
 end
 

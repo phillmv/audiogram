@@ -4,20 +4,49 @@
 
 // I CAN TELL this is lame code, but I didn't have time
 // to finish reading 'The Good Parts' before the party date.
+// If this were ruby, maybe I would have a class or a module
+// but I don't entirely grok the js inheritance model as of yet
 
+// VARIABLES I (DISGUSTINGLY) STORE GLOBALLY:
+
+// store images to be loaded on to the main waterfall
 $images = [];
+
+// store the integer count of the span containing 
+// a row of images that have been loaded, but should now
+// be garbage collected.
 $loaded_img = []
+
+// counter used to keep track of the number of rows injected
+// into the waterfall so we can then GC them later.
+// HINT: refactor
+$counter = 0;
+
+// waterfall container
 $container = $('#pics');
 
+
+// hash containing the pagination ids necessary for traversing
+// the instagram tag feed
 $next_id = {}
 
+// array containing the tags we are using for waterfall
+$tags = []
+
+// pause waterfall and the auto slide transitions
 $PAUSED = false;
 
+// number of images per row
 $WIDTH = 8;
+
+// number of rows in the DOM, before garbage collection gets triggered
 $MAX_SIZE = 12;
+
+// number of images remaining in the $images array before we'll trigger
+// a new request for more images.
 $BUFFER = 24;
 
-$counter = 0;
+
 
 function draw(callback){
 
@@ -27,7 +56,6 @@ function draw(callback){
     return;
 
   }
-  var html = ""
 
 
   if($images.length < $BUFFER)
@@ -38,6 +66,7 @@ function draw(callback){
   if($images.length > 0)
   {
 
+    var html = ""
     len = ($images.length < $WIDTH ? $images.length : $WIDTH)
     for(var i = 0; i < len; i++) {
       img = $images.shift();
@@ -62,7 +91,7 @@ function draw(callback){
   }
   else
   {
-    // refactoring would be smart. This is silly
+    // refactoring would be smart. Such spaghetti!
     setTimeout("draw()", 1000);
 
   }
@@ -71,7 +100,7 @@ function draw(callback){
 
 function load_items(callback)
 {
-  $.post("/moar", { next_id: $next_id }, function(data) {
+  $.post("/moar", { next_id: $next_id, tags: $tags }, function(data) {
       $next_id = data[0]
 
       $images = $images.concat(data[1]);
@@ -83,14 +112,25 @@ function load_items(callback)
 
 }
 
+function poll_tag()
+{
+  $.get("/tagged", function(data) {
+      if(data != ""){
+	$("#dyn_img").html("<img src=" + data + " />");
+      }
+
+    });
+
+  setTimeout("poll_tag()", 5000);
+}
+
 
 
 $(window).load(function(){
 
     $("#tag").submit(function(e) {
 	e.preventDefault();
-	var tags = $("#tag_input").attr("value").split(" ");
-	$.post("/", { tags: tags });
+	$tags = $("#tag_input").attr("value").split(" ");
 
 	$("#question").remove();
 
@@ -102,6 +142,9 @@ $(window).load(function(){
 
 
 	load_items(draw);
+
+	$("#jmpress").jmpress('select', '#step-1')
+	setTimeout("next_slide(1)", 10000);
 
 	$container.isotope(
 	  {
@@ -122,3 +165,24 @@ $(window).load(function(){
 
 
   });
+
+function next_slide(count){
+
+  if(!$PAUSED)
+  {
+    $('#jmpress').jmpress("next");
+  }
+  
+  next_count = (count++ % 5) + 1;
+  if(next_count === 1)
+  {
+    timeout = 10000;
+  }
+  else
+  {
+    timeout = 2000;
+  }
+  setTimeout("next_slide(" + next_count + ")", timeout);
+    
+
+}

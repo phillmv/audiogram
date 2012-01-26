@@ -1,4 +1,6 @@
 require "digest"
+require 'ruby-debug'
+
 enable :sessions
 set :public_folder, File.join(File.dirname(__FILE__), 'public')
 
@@ -17,17 +19,11 @@ get "/" do
 end
 
 post "/" do
-  session[:tags] = params[:tags]
-end
-
-get "/oauth/connect" do
-  redirect Instagram.authorize_url(:redirect_uri => CALLBACK_URL)
-end
-
-get "/oauth/callback" do
-  response = Instagram.get_access_token(params[:code], :redirect_uri => CALLBACK_URL)
-  session[:access_token] = response.access_token
-  redirect "/feed"
+  if !params[:tags].empty?
+    session[:tags] = params[:tags]
+  else
+    session[:tags] = nil
+  end
 end
 
 get "/feed" do
@@ -42,13 +38,24 @@ get "/feed" do
 end
 
 get "/moar" do
-  if session[:tags].blank?
+  @images = []
+  if session[:tags].nil? || session[:tags].empty?
     @images = Instagram.media_popular.collect do |i| 
-      url = i.images.thumbnail.url
-      url
-    end.to_json
+      i.images.thumbnail.url
+    end
+  else
+    content = []
+    session[:tags].each do |tag|
+      content << Instagram.tag_recent_media(tag, :count => 20)
+    end
+
+    (0..19).each do |i|
+      content.each do |insta|
+	@images << insta.data[i].images.thumbnail.url
+      end
+    end
   end
-   #erb :images, :layout => false
+  @images.to_json
 end
 
 post '/tagged' do

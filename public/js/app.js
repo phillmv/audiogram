@@ -30,30 +30,41 @@ function draw(callback){
 
   if($images.length < $BUFFER)
   {
-    load_items();
+    //load_items();
   }
 
-  len = ($images.length < $WIDTH ? $images.length : $WIDTH)
-  for(var i = 0; i < len; i++) {
-    img = $images.shift();
-    html = html + "<div class='item' id='" + img[1] +"'><img src='" + img[0] + "' /></div>";
-  }
+  if($images.length > 0)
+  {
 
-  var new_items = $("<span id='container" + $counter + "'>" + html + "</span");
+    len = ($images.length < $WIDTH ? $images.length : $WIDTH)
+    for(var i = 0; i < len; i++) {
+      img = $images.shift();
+      html = html + "<div class='item'><img src='" + img + "' /></div>";
+    }
 
-  $loaded_img = $loaded_img.concat($counter)
-  $counter++;
-  new_items.imagesLoaded(function() {
+    var new_items = $("<span id='container" + $counter + "'>" + html + "</span");
 
-      $container.prepend(new_items).isotope( 'reloadItems').isotope({ sortBy: 'original-order', gutterWidth: 10 });
-      if ($loaded_img.length > $MAX_SIZE)
-      {
+    $loaded_img = $loaded_img.concat($counter)
+    $counter++;
+    new_items.imagesLoaded(function() {
+
+	$container.prepend(new_items).isotope( 'reloadItems').isotope({ sortBy: 'original-order', gutterWidth: 10 });
+	if ($loaded_img.length > $MAX_SIZE)
+	{
+	  alert(($loaded_img.length));
 	  $("#container" + $loaded_img.shift()).remove();
-      }
+	}
 
-      setTimeout("draw()", 1000);
+	setTimeout("draw()", 1000);
 
-    });
+      });
+  }
+  else
+  {
+    // refactoring would be smart. This is silly
+    setTimeout("draw()", 1000);
+
+  }
 
 }
 

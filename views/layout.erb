@@ -22,31 +22,42 @@
 			<header>
 
 			</header>
-
+		
 			<div id="jmpress">
-				<div class="step" data-x="1000" data-y="0" data-rotate="0" data-scale="4">
+
+				<div id="question">
+					<h1>Hey.</h1>
+					<h1>Pick some tags to populate the stream with.</h1>
+					<h1>Don't use #s.</h1>
+					<form id="tag" action="" method="GET">
+						<input id="tag_input" type="text" class="default-value">
+						<input type="submit" value="Go">
+					</form>
+				</div>
+
+				<div class="step hidden" data-x="1000" data-y="0" data-rotate="0" data-scale="4">
 					<div id="main" role="main">
 						<%= yield %>
 
 					</div>
 
 				</div>
-				<div class="step" data-x="1000" data-y="-7000" data-z="0" data-rotate="0" data-scale="3">
+				<div class="step hidden" data-x="1000" data-y="-7000" data-z="0" data-rotate="0" data-scale="3">
 					<img class="poster" src="/oui.jpg" />
 					<img class="poster" src="/oui3.jpg" />
 				</div>
 
-				<div class="step" data-x="3000" data-y="-7000" data-rotate-y="90" data-rotate="0" data-scale="3">
+				<div class="step hidden" data-x="3000" data-y="-7000" data-rotate-y="90" data-rotate="0" data-scale="3">
 					<img class="poster" src="/oui2.jpg" />
 					<img class="poster" src="/oui5.jpg" />
 				</div>
 
-				<div class="step" data-x="5000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1">
+				<div class="step hidden" data-x="5000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1">
 					<img class="poster" src="/oui4.jpg" />
 					<img class="poster" src="/oui.jpg" />
 				</div>
 
-				<div class="step" data-x="8000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1">
+				<div class="step hidden" data-x="8000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1">
 					<div style="position:absolute; z-index:500;">
 						<img src="/transperancy.png" style="width: 612px"/>
 					</div>

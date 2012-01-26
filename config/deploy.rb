@@ -1,3 +1,5 @@
+require "bundler/capistrano"
+
 set :application, "audiogram"
 set :repository,  "git@github.com:phillmv/audiogram.git"
 

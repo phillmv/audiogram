@@ -70,24 +70,35 @@ function load_items(callback)
 
 }
 
-$(function() {
-    $('#jmpress').jmpress();
-});
 
 
 $(window).load(function(){
 
-    load_items(draw);
+    $("#tag").submit(function(e) {
+	e.preventDefault();
+	var tags = $("#tag_input").attr("value").split(" ");
+	$.post("/", { tags: tags });
 
-    $container.isotope(
-      {
-	itemSelector: '.item',
-	gutterWidth: 10,
-	animationEngine: 'css'
-      }
-    );
+	$("#question").remove();
+
+	$(".step").each(function(i, elem) {
+	    $(elem).removeClass("hidden");
+	  });
+	
+	$('#jmpress').jmpress();
 
 
+	load_items(draw);
+
+	$container.isotope(
+	  {
+	    itemSelector: '.item',
+	    gutterWidth: 10,
+	    animationEngine: 'css'
+	  }
+	);
+      });
+    
 
     $("#moar").click(function(event) {	
 	event.preventDefault();

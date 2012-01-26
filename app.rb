@@ -11,11 +11,13 @@ Instagram.configure do |config|
 end
 
 get "/" do
-  '<a href="/oauth/connect">Connect with Instagram</a>'
 
-  @images = Instagram.user_recent_media(229814, access_token: ACCESS_TOKEN, max_timestamp: 1323464798).collect { |i| i.images.thumbnail.url }
-#  @images = Instagram.media_popular.collect { |i| i.images.thumbnail.url }
+ # @images = Instagram.user_recent_media(229814, access_token: ACCESS_TOKEN, max_timestamp: 1323464798).collect { |i| i.images.thumbnail.url }
   erb :index
+end
+
+post "/" do
+  session[:tags] = params[:tags]
 end
 
 get "/oauth/connect" do
@@ -40,11 +42,24 @@ get "/feed" do
 end
 
 get "/moar" do
-   @images = Instagram.media_popular.collect do |i| 
-     url = i.images.thumbnail.url
-     [url, hsh(url) ]
-   end.to_json
+  if session[:tags].blank?
+    @images = Instagram.media_popular.collect do |i| 
+      url = i.images.thumbnail.url
+      url
+    end.to_json
+  end
    #erb :images, :layout => false
+end
+
+post '/tagged' do
+  require 'ruby-debug'
+  debugger
+  content = Instagram.tag_recent_media("edbanger")
+  max_id = content.pagination.next_max_id
+
+  content = Instagram.tag_recent_media("edbanger", :max_id => max_id)
+  max_id = content.pagination.next_max_id
+
 end
 
 def hsh(str)

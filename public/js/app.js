@@ -9,6 +9,8 @@ $images = [];
 $loaded_img = []
 $container = $('#pics');
 
+$next_id = {}
+
 $PAUSED = false;
 
 $WIDTH = 8;
@@ -30,7 +32,7 @@ function draw(callback){
 
   if($images.length < $BUFFER)
   {
-    //load_items();
+    load_items();
   }
 
   if($images.length > 0)
@@ -51,7 +53,6 @@ function draw(callback){
 	$container.prepend(new_items).isotope( 'reloadItems').isotope({ sortBy: 'original-order', gutterWidth: 10 });
 	if ($loaded_img.length > $MAX_SIZE)
 	{
-	  alert(($loaded_img.length));
 	  $("#container" + $loaded_img.shift()).remove();
 	}
 
@@ -70,14 +71,15 @@ function draw(callback){
 
 function load_items(callback)
 {
-  $.getJSON("/moar", function(data) {
+  $.post("/moar", { next_id: $next_id }, function(data) {
+      $next_id = data[0]
 
-      $images = $images.concat(data);
+      $images = $images.concat(data[1]);
       if(callback !== undefined)
       {
 	callback();
       }
-    });
+    }, 'json');
 
 }
 

@@ -4,6 +4,8 @@ require 'ruby-debug'
 enable :sessions
 set :public_folder, File.join(File.dirname(__FILE__), 'public')
 
+IMG_COUNT = 40
+
 CALLBACK_URL = "http://localhost:4567/oauth/callback"
 
 ACCESS_TOKEN = "229814.9b4ac62.277dd0a52a054ec49e4746a1e1a36d7f"
@@ -14,7 +16,7 @@ end
 
 get "/" do
 
- # @images = Instagram.user_recent_media(229814, access_token: ACCESS_TOKEN, max_timestamp: 1323464798).collect { |i| i.images.thumbnail.url }
+  # @images = Instagram.user_recent_media(229814, access_token: ACCESS_TOKEN, max_timestamp: 1323464798).collect { |i| i.images.thumbnail.url }
   erb :index
 end
 
@@ -37,30 +39,43 @@ get "/feed" do
   html
 end
 
-get "/moar" do
+post "/moar" do
   @images = []
+
   if session[:tags].nil? || session[:tags].empty?
     @images = Instagram.media_popular.collect do |i| 
       i.images.thumbnail.url
     end
   else
     content = []
+
+    pagination = params[:next_id]
+    next_max_id = {}
+
     session[:tags].each do |tag|
-      content << Instagram.tag_recent_media(tag, :count => 20)
+
+      if pagination.nil? || pagination[tag].nil? || pagination[tag].empty?
+	tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT)
+      else
+	tag_media = Instagram.tag_recent_media(tag, :count => IMG_COUNT, :max_id => pagination[tag])
+	puts "#{tag} -- #{pagination[tag]}"
+      end
+      content << tag_media
+      next_max_id[tag] = tag_media.pagination.next_max_id
     end
 
-    (0..19).each do |i|
+    IMG_COUNT.times do |i|
       content.each do |insta|
-	@images << insta.data[i].images.thumbnail.url
+	if !insta.data[i].nil?
+	  @images << insta.data[i].images.thumbnail.url
+	end
       end
     end
   end
-  @images.to_json
+  [next_max_id, @images].to_json
 end
 
 post '/tagged' do
-  require 'ruby-debug'
-  debugger
   content = Instagram.tag_recent_media("edbanger")
   max_id = content.pagination.next_max_id
 

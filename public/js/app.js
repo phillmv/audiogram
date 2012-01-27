@@ -17,6 +17,8 @@ $tagged_arr = [];
 $to_display = []
 $new_tag = []
 
+$jmp = $("#jmpress");
+
 // store the integer count of the span containing 
 // a row of images that have been loaded, but should now
 // be garbage collected.
@@ -52,7 +54,15 @@ $MAX_SIZE = 16;
 // a new request for more images.
 $BUFFER = 24;
 
+$FIRST_RUN = true;
 
+
+$tracks = [
+  [ ["#home", 60000], [ "#step-2", 2000], ["#step-3", 2000], ["#step-4", 2000] ]
+];
+
+$current_track = 0;
+$track_pos = 0;
 
 function draw(){
 
@@ -115,27 +125,33 @@ function draw(){
 
 function draw_slides()
 {
-  if ($to_display.length < 5)
+  while ($to_display.length < 50)
   {
-    for(var i = 0; i < $tag_arr; i++)
+    for(var i = 0; i < $tagged_arr.length; i++)
     {
       rand = Math.ceil(Math.random() * 10);
       if(i < 20)
       {
 	if(rand > 4)
 	{
-	  $to_display.push($tag_arr[i])
+	  $to_display.push($tagged_arr[i])
 	}
       }
       else
       {
 	if(rand > 7)
 	{
-	  $to_display.push($tag_arr[i])
+	  $to_display.push($tagged_arr[i])
 	}
       }
     }
   }
+
+  $(".dyn_img").each(function(i, elem) { 
+      $(elem).html("<img src='" + $to_display.shift() + "' />");
+    });
+
+  setTimeout("draw_slides()", 10000);
 }
 
 function load_items(callback)
@@ -152,7 +168,7 @@ function load_items(callback)
 
 }
 
-function poll_tag()
+function poll_tag(callback)
 {
   $.getJSON("/tagged", function(data) {
       if(data != ""){
@@ -162,7 +178,10 @@ function poll_tag()
 	  if ($tagged_hsh[i] === undefined)
 	  {
 	    $tagged_hsh[i] = data[i]
-	    $new_tag.push(data[i]);
+	    if(!$FIRST_RUN)
+	    {
+	      $new_tag.push(data[i]);
+	    }
 	  }
 	}
 
@@ -178,6 +197,12 @@ function poll_tag()
 	  $tagged_arr.push($tagged_hsh[arr[i]])
 	}
 
+	$FIRST_RUN = false;
+
+	if(callback !== undefined)
+	{
+	  callback();
+	}
 
 
       }
@@ -200,14 +225,7 @@ $(window).load(function(){
 	    $(elem).removeClass("hidden");
 	  });
 	
-	$('#jmpress').jmpress();
-
-
-	load_items(draw);
-
-	poll_tag();
-	$("#jmpress").jmpress('select', '#step-1')
-	setTimeout("next_slide(1)", 20000);
+	$jmp.jmpress();
 
 	$container.isotope(
 	  {
@@ -216,24 +234,68 @@ $(window).load(function(){
 	    animationEngine: 'css'
 	  }
 	);
+
+	load_items(draw);
+
+	poll_tag(draw_slides);
+
+	do_slides();
+
       });
     
 
-    $("#moar").click(function(event) {	
-	event.preventDefault();
-	event.stopPropagation();
-
-	add_moar();
-      });
-
-
   });
+
+function do_slides()
+{
+  var curr = $tracks[$current_track][$track_pos];
+  var next = undefined;
+
+  // if moving ahead in the current track doesn't overflow
+  if (($track_pos + 1) < $tracks[$current_track].length)
+  {
+    $track_pos = $track_pos + 1;
+  }
+  else
+  {
+    // it overflowed! time to move to next track
+    $track_pos = 0;
+    if(($current_track+1) >= $tracks.length)
+    {
+      $current_track = 0;
+    }
+    else
+    {
+      $current_track = $current_track + 1;
+    }
+  }
+
+  
+  leave_in = curr[1];
+  slide = curr[0];
+
+  // CAN YOU TELL THIS STUFF SHOULD BE IN ITS OWN DATASTRUCTURE?!?!?!
+  next_slide =  $tracks[$current_track][$track_pos][0]
+
+  if(slide != "#home")
+  {
+    $PAUSE_WATERFALL = true;
+  }
+  if(next_slide == "#home")
+  {
+    $PAUSE_WATERFALL = false;
+  }
+
+  $jmp.jmpress('select', slide);
+
+  setTimeout("do_slides()", leave_in);
+}
 
 function next_slide(count){
 
   if(!$PAUSED)
   {
-    $('#jmpress').jmpress("next");
+    jmp.jmpress("next");
   }
  
    next_count = (count++ % 5) + 1;
@@ -241,6 +303,7 @@ function next_slide(count){
   {
     timeout = 10000;
     $PAUSE_WATERFALL = false;
+    draw_slides();
 
   }
   else

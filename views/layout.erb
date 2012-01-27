@@ -35,43 +35,64 @@
 					</form>
 				</div>
 
-				<div class="step hidden" data-x="1000" data-y="0" data-rotate="0" data-scale="4">
+				<div class="step hidden" id="home" data-x="1000" data-y="0" data-rotate="0" data-scale="3">
 					<div id="main" role="main">
 						<%= yield %>
 
 					</div>
 
 				</div>
-				<div class="step hidden" data-x="1000" data-y="-7000" data-z="0" data-rotate="0" data-scale="3">
-					<img class="poster" src="/oui.jpg" />
-					<img class="poster" src="/oui3.jpg" />
-				</div>
-
-				<div class="step hidden" data-x="3000" data-y="-7000" data-rotate-y="90" data-rotate="0" data-scale="3">
-					<img class="poster" src="/oui2.jpg" />
-					<img class="poster" src="/oui5.jpg" />
-				</div>
-
-				<div class="step hidden" data-x="5000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1">
-					<img class="poster" src="/oui4.jpg" />
-					<img class="poster" src="/oui.jpg" />
-				</div>
-
-				<div class="step hidden" data-x="8000" data-y="-6000" data-z="-1000" data-rotate-y="-90" data-rotate="0" data-scale="1" id="tagged">
-
-					<div style="position:absolute; z-index:500;">
-						<img src="/transperancy.png" style="width: 612px"/>
-					</div>
-					<div style="position:absolute; z-index:200" id="dyn_img">
-						<img src="http://distilleryimage0.s3.amazonaws.com/98df8bb2342d11e1a87612313804ec91_7.jpg" />
+				<div class="step hidden" id="step-2" data-x="6000" data-y="0" data-z="0" data-rotate="0" data-scale="3">
+					<div class="tagged">
+						<div class="left_tag">
+							<img class="poster" src="/poster1.jpg" />
+						</div>
+						<div class="right_tag">
+							<img class="poster" src="/poster2.jpg" />
+						</div>
 					</div>
 				</div>
 
+				<div class="step hidden" id="step-3" data-x="6000" data-y="0" data-rotate-y="90" data-rotate="0" data-scale="3">
+					<div class="tagged">
+						<div class="left_tag">
+							<div class="transperancy">
+								<img src="/transperancy.png"/>
+							</div>
+							<div class="dyn_img">
+							</div>
+						</div>
 
-			</div>
-			<footer>
+						<div class="right_tag">
+							<div class="transperancy">
+								<img src="/transperancy.png"/>
+							</div>
+							<div class="dyn_img">
+							</div>
 
-			</footer>
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="step hidden" data-x="6000" data-y="-3000" data-rotate-y="90" data-scale="3">
+					<div class="tagged">
+						<div class="left_tag">
+							<img class="poster" src="/poster3.jpg" />
+						</div>
+						<div class="right_tag">
+							<div class="transperancy">
+								<img src="/transperancy.png"/>
+							</div>
+							<div class="dyn_img">
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
 		</div> <!--! end of #container -->
 
 		<script>

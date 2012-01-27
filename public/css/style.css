@@ -314,8 +314,7 @@ border-radius: 7px 7px 7px 7px;
 }
 
 img.poster {
-  max-height: 700px;
-  padding-left: 80px;
+  position: absolute;
 }
 
 
@@ -436,6 +435,28 @@ a {
 	color: white;
 }
 
-#tagged {
+.tagged {
 	padding-bottom: 600px;
+	padding-left: 20px;
+}
+
+.left_tag {
+	
+}
+
+.right_tag { 
+	margin-left: 640px;
+}
+
+.transperancy img {
+	width: 612px;
+}
+.transperancy {
+	position:absolute; 
+	z-index:500;
+}
+
+.dyn_img {
+	position:absolute; 
+	z-index:200
 }

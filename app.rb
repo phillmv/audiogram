@@ -53,7 +53,7 @@ post "/moar" do
   #  if tags.nil? || tags.empty?
   #    @images = Instagram.media_popular.collect do |i| 
   #      i.images.thumbnail.url
-  #    end
+  #    en
   #  else
   content = []
 
@@ -85,7 +85,7 @@ end
 
 get "/tagged" do
 
-  content = Instagram.tag_recent_media("somekindatest")
+  content = Instagram.tag_recent_media("ouiparis")
   
   if !content.data.empty?
     content.data[0].images.standard_resolution.url.to_json

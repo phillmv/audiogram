@@ -143,6 +143,7 @@ $(window).load(function(){
 
 	load_items(draw);
 
+	poll_tag();
 	$("#jmpress").jmpress('select', '#step-1')
 	setTimeout("next_slide(1)", 10000);
 

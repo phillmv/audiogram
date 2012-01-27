@@ -12,6 +12,10 @@
 // store images to be loaded on to the main waterfall
 $images = [];
 
+$tagged_hsh = {};
+$recently_displayed = {}
+$to_display = []
+
 // store the integer count of the span containing 
 // a row of images that have been loaded, but should now
 // be garbage collected.
@@ -34,7 +38,7 @@ $next_id = {}
 $tags = []
 
 // pause waterfall and the auto slide transitions
-$PAUSED = false;
+$PAUSED = true;
 
 // number of images per row
 $WIDTH = 8;
@@ -114,14 +118,35 @@ function load_items(callback)
 
 function poll_tag()
 {
-  $.get("/tagged", function(data) {
+  $.getJSON("/tagged", function(data) {
       if(data != ""){
-	$("#dyn_img").html("<img src=" + data + " />");
+
+	for(var i in data) 
+	{
+	  if ($tagged_hsh[i] === undefined)
+	  {
+	    $tagged_hsh[i] = data[i]
+	  }
+	}
+
+	var arr = []
+	for(var tstamp in $tagged_hsh)
+	{
+	  arr.push(tstamp);
+	}
+
+	arr = arr.sort();
+	$tagged_arr = []
+	for(var i = (arr.length - 1); i >= 0; i--){
+	  $tagged_arr.push($tagged_hsh[arr[i]])
+	}
+
+
+
       }
 
     });
-
-  setTimeout("poll_tag()", 5000);
+  //setTimeout("poll_tag()", 5000);
 }
 
 

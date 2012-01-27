@@ -86,9 +86,13 @@ end
 get "/tagged" do
 
   content = Instagram.tag_recent_media("ouiparis")
-  
+  hsh = {}
   if !content.data.empty?
-    content.data[0].images.standard_resolution.url.to_json
+    content.data.each { |dat| 
+      hsh[dat.caption.created_time] = dat.images.standard_resolution.url 
+    }
+
+    hsh.to_json
   else
     ""
   end

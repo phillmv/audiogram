@@ -85,7 +85,7 @@ end
 
 get "/tagged" do
 
-  content = Instagram.tag_recent_media("ouiparis")
+  content = Instagram.tag_recent_media("ouiparis", :count => IMG_COUNT)
   hsh = {}
   if !content.data.empty?
     content.data.each { |dat| 

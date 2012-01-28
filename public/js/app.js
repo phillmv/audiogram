@@ -56,7 +56,7 @@ $BUFFER = 24;
 
 $FIRST_RUN = true;
 
-$tr_t = 2000;
+$tr_t = 3000;
 
 $tracks = [
   [ ["#home", 60000], [ "#step-2", $tr_t], ["#step-3", $tr_t], ["#step-4", $tr_t], ["#step-5", $tr_t] ],
